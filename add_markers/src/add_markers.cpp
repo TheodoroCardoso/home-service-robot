@@ -60,24 +60,21 @@ int main( int argc, char** argv )
     }
     //Publish Marker to the pick up zone
     marker_pub.publish(marker);
-    sleep(5.0);
+
+    // Wait for robot arrival at pick up zone
 
     //Hide the marker	
-    marker.scale.x = 0.000001;
-    marker.scale.y = 0.000001;
-    marker.scale.z = 0.000001;
+    marker.action = visualization_msgs::Marker::DELETE;
     marker_pub.publish(marker);
-    sleep(5.0);
+
+    // Wait for robot arrival at drop off zone
    
     //Publish the marker to the drop off zone
     marker.pose.position.x = 3;
     marker.pose.position.y = -3;
     marker.pose.orientation.w = 0.707;
     marker.pose.orientation.z = -0.707;
-    marker.scale.x = 0.1;
-    marker.scale.y = 0.1;
-    marker.scale.z = 0.1;
+    marker.action = visualization_msgs::Marker::ADD;
     marker_pub.publish(marker);
-    sleep(5.0);
   }
 }
