@@ -15,17 +15,14 @@ int main( int argc, char** argv )
 {
   float tolerance = 0.1;
   bool atPickUp = false, atDropOff = false;
-  float pickUpPose[] = {-6, 1.5, 0.911, 0.412};
-  float dropOffPose[] = {3, -3, 0.707, -0.707};
+  float pickUpPose[] = { -6, 1.5, 0.911, 0.412 };
+  float dropOffPose[] = { 3, -3, 0.707, -0.707 };
 
   ros::init(argc, argv, "add_markers");
   ros::NodeHandle n;
   ros::Rate r(1);
   ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
   ros::Subscriber odom_sub = n.subscribe("odom", 1000, odomCallback);
-
-  // Set our initial shape type to be a cube
-  uint32_t shape = visualization_msgs::Marker::CUBE;
 
   while (ros::ok())
   {
@@ -39,10 +36,10 @@ int main( int argc, char** argv )
     marker.ns = "add_markers";
     marker.id = 0;
 
-    // Set the marker type.  Initially this is CUBE, and cycles between that and SPHERE, ARROW, and CYLINDER
-    marker.type = shape;
+    // Set the marker type.  Initially this is CUBE
+    marker.type = visualization_msgs::Marker::CUBE;
 
-    // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
+    // Set the marker action.  Options are ADD, DELETE
     marker.action = visualization_msgs::Marker::ADD;
 
     // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
@@ -76,8 +73,10 @@ int main( int argc, char** argv )
     }
     //Publish Marker to the pick up zone
     marker_pub.publish(marker);
-
+    ROS_INFO("Marker at pick up zone");
+    
     // Wait for robot arrival at pick up zone
+    ROS_INFO("Waiting for robot to arrive at pick up zone");
     do{
       atPickUp = true;
       for (int i = 0; i < 4; i++){
@@ -85,14 +84,17 @@ int main( int argc, char** argv )
     	  atPickUp = false;
     	}
       }
+      sleep(0.5);
     }
     while(!atPickUp);
 
     //Hide the marker	
     marker.action = visualization_msgs::Marker::DELETE;
     marker_pub.publish(marker);
-
+    ROS_INFO("Robot arrived. Marker deleted");
+    
     // Wait for robot arrival at drop off zone
+    ROS_INFO("Waiting for robot to arrive at drop off zone");
     do{
       atDropOff = true;
       for (int i = 0; i < 4; i++){
@@ -100,6 +102,7 @@ int main( int argc, char** argv )
     	  atDropOff = false;
     	}
       }
+      sleep(0.5);
     }
     while(!atDropOff);
    
@@ -110,5 +113,8 @@ int main( int argc, char** argv )
     marker.pose.orientation.z = dropOffPose[3];
     marker.action = visualization_msgs::Marker::ADD;
     marker_pub.publish(marker);
+    ROS_INFO("Robot arrived. Marker is now at the drop off zone");
+
+    ros::spin();    
   }
 }

@@ -64,6 +64,7 @@ int main(int argc, char** argv){
     ROS_INFO("Robot dropped virtual object");
   else
     ROS_INFO("Robot failed to move to the drop off zone");
-
+  
+  ros::spin(); 
   return 0;
 }
