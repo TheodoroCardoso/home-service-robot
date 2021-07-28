@@ -1,12 +1,28 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
+#include <nav_msgs/Odometry.h>
+
+float odomPose[4];
+
+void odomCallback(const nav_msgs::Odometry::ConstPtr &msg){  
+  odomPose[0] = msg->pose.pose.position.x;
+  odomPose[1] = msg->pose.pose.position.y;
+  odomPose[2] = msg->pose.pose.orientation.w;
+  odomPose[3] = msg->pose.pose.orientation.z;
+}
 
 int main( int argc, char** argv )
 {
+  float tolerance = 0.1;
+  bool atPickUp = false, atDropOff = false;
+  float pickUpPose[] = {-6, 1.5, 0.911, 0.412};
+  float dropOffPose[] = {3, -3, 0.707, -0.707};
+
   ros::init(argc, argv, "add_markers");
   ros::NodeHandle n;
   ros::Rate r(1);
   ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+  ros::Subscriber odom_sub = n.subscribe("odom", 1000, odomCallback);
 
   // Set our initial shape type to be a cube
   uint32_t shape = visualization_msgs::Marker::CUBE;
@@ -30,10 +46,10 @@ int main( int argc, char** argv )
     marker.action = visualization_msgs::Marker::ADD;
 
     // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-    marker.pose.position.x = -6;
-    marker.pose.position.y = 1.5;
-    marker.pose.orientation.w = 0.911;
-    marker.pose.orientation.z = 0.412;
+    marker.pose.position.x = pickUpPose[0];
+    marker.pose.position.y = pickUpPose[1];
+    marker.pose.orientation.w = pickUpPose[2];
+    marker.pose.orientation.z = pickUpPose[3];
 
     // Set the scale of the marker -- 1x1x1 here means 1m on a side
     marker.scale.x = 0.1;
@@ -62,18 +78,36 @@ int main( int argc, char** argv )
     marker_pub.publish(marker);
 
     // Wait for robot arrival at pick up zone
+    do{
+      atPickUp = true;
+      for (int i = 0; i < 4; i++){
+  	if ( abs( odomPose[i] - pickUpPose[i]) > tolerance){
+    	  atPickUp = false;
+    	}
+      }
+    }
+    while(!atPickUp);
 
     //Hide the marker	
     marker.action = visualization_msgs::Marker::DELETE;
     marker_pub.publish(marker);
 
     // Wait for robot arrival at drop off zone
+    do{
+      atDropOff = true;
+      for (int i = 0; i < 4; i++){
+  	if ( abs( odomPose[i] - dropOffPose[i]) > tolerance){
+    	  atDropOff = false;
+    	}
+      }
+    }
+    while(!atDropOff);
    
     //Publish the marker to the drop off zone
-    marker.pose.position.x = 3;
-    marker.pose.position.y = -3;
-    marker.pose.orientation.w = 0.707;
-    marker.pose.orientation.z = -0.707;
+    marker.pose.position.x = dropOffPose[0];
+    marker.pose.position.y = dropOffPose[1];
+    marker.pose.orientation.w = dropOffPose[2];
+    marker.pose.orientation.z = dropOffPose[3];
     marker.action = visualization_msgs::Marker::ADD;
     marker_pub.publish(marker);
   }
