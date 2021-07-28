@@ -9,19 +9,19 @@ void poseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
   pose[1] = msg->pose.pose.position.y;
   pose[2] = msg->pose.pose.orientation.w;
   pose[3] = msg->pose.pose.orientation.z;
-  ROS_INFO("%f", pose[0]);
+  //ROS_INFO("%f", pose[0]);
 }
 
 int main( int argc, char** argv )
 {
-  float tolerance = 0.3;
+  float tolerance = 0.1;
   bool atPickUp = false, atDropOff = false;
   float pickUpPose[] = { -6, 1.5, 0.911, 0.412 };
   float dropOffPose[] = { 3, -3, 0.707, -0.707 };
 
   ros::init(argc, argv, "add_markers");
   ros::NodeHandle n;
-  ros::Rate r(1);
+  ros::Rate r(2);
   ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
   ros::Subscriber amcl_sub = n.subscribe("amcl_pose", 1000, poseCallback);
 
@@ -70,24 +70,25 @@ int main( int argc, char** argv )
         return 0;
       }
       ROS_WARN_ONCE("Please create a subscriber to the marker");
-      sleep(1);
+      r.sleep();
     }
     //Publish Marker to the pick up zone
     marker_pub.publish(marker);
     ROS_INFO("Marker at pick up zone");
+    //ros::spin();
     
     // Wait for robot arrival at pick up zone
     ROS_INFO("Waiting for robot to arrive at pick up zone");
     do{
       atPickUp = true;
-      //ROS_INFO_STREAM("-----");
+      ROS_INFO_STREAM("-----");
       for (int i = 0; i < 4; i++){
-	//ROS_INFO_STREAM("pose = " << pose[i] << " goal = " << pickUpPose[i] <<  " dif = " <<  pose[i] - pickUpPose[i]);
+	ROS_INFO_STREAM("pose = " << pose[i] << " goal = " << pickUpPose[i] <<  " dif = " <<  pose[i] - pickUpPose[i]);
   	if ( abs( pose[i] - pickUpPose[i]) > tolerance){
     	  atPickUp = false;
     	}
       }
-      sleep(1);
+      r.sleep();
     }
     while(!atPickUp);
 
@@ -105,7 +106,7 @@ int main( int argc, char** argv )
     	  atDropOff = false;
     	}
       }
-      sleep(0.5);
+      r.sleep();
     }
     while(!atDropOff);
    
