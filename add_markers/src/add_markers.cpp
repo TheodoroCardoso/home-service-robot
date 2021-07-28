@@ -1,14 +1,15 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
-#include <nav_msgs/Odometry.h>
+#include "geometry_msgs/PoseWithCovarianceStamped.h"
 
-float odomPose[4];
+float pose[4];
 
-void odomCallback(const nav_msgs::Odometry::ConstPtr &msg){  
-  odomPose[0] = msg->pose.pose.position.x;
-  odomPose[1] = msg->pose.pose.position.y;
-  odomPose[2] = msg->pose.pose.orientation.w;
-  odomPose[3] = msg->pose.pose.orientation.z;
+void poseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){  
+  pose[0] = msg->pose.pose.position.x;
+  pose[1] = msg->pose.pose.position.y;
+  pose[2] = msg->pose.pose.orientation.w;
+  pose[3] = msg->pose.pose.orientation.z;
+  ROS_INFO("%f", pose[0]);
 }
 
 int main( int argc, char** argv )
@@ -22,7 +23,7 @@ int main( int argc, char** argv )
   ros::NodeHandle n;
   ros::Rate r(1);
   ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
-  ros::Subscriber odom_sub = n.subscribe("odom", 1000, odomCallback);
+  ros::Subscriber amcl_sub = n.subscribe("amcl_pose", 1000, poseCallback);
 
   while (ros::ok())
   {
@@ -79,12 +80,14 @@ int main( int argc, char** argv )
     ROS_INFO("Waiting for robot to arrive at pick up zone");
     do{
       atPickUp = true;
+      //ROS_INFO_STREAM("-----");
       for (int i = 0; i < 4; i++){
-  	if ( abs( odomPose[i] - pickUpPose[i]) > tolerance){
+	//ROS_INFO_STREAM("pose = " << pose[i] << " goal = " << pickUpPose[i] <<  " dif = " <<  pose[i] - pickUpPose[i]);
+  	if ( abs( pose[i] - pickUpPose[i]) > tolerance){
     	  atPickUp = false;
     	}
       }
-      sleep(0.5);
+      sleep(1);
     }
     while(!atPickUp);
 
@@ -98,7 +101,7 @@ int main( int argc, char** argv )
     do{
       atDropOff = true;
       for (int i = 0; i < 4; i++){
-  	if ( abs( odomPose[i] - dropOffPose[i]) > tolerance){
+  	if ( abs( pose[i] - dropOffPose[i]) > tolerance){
     	  atDropOff = false;
     	}
       }
