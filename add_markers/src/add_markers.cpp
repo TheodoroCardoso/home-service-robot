@@ -13,7 +13,7 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr &msg){
 
 int main( int argc, char** argv )
 {
-  float tolerance = 0.1;
+  float tolerance = 0.3;
   bool atPickUp = false, atDropOff = false;
   float pickUpPose[] = { -6, 1.5, 0.911, 0.412 };
   float dropOffPose[] = { 3, -3, 0.707, -0.707 };
