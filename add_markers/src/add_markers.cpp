@@ -14,7 +14,7 @@ void poseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
 
 int main( int argc, char** argv )
 {
-  float tolerance = 0.1;
+  float tolerance = 0.05;
   bool atPickUp = false, atDropOff = false;
   float pickUpPose[] = { -6, 1.5, 0.911, 0.412 };
   float dropOffPose[] = { 3, -3, 0.707, -0.707 };
@@ -100,7 +100,9 @@ int main( int argc, char** argv )
     ROS_INFO("Waiting for robot to arrive at drop off zone");
     do{
       atDropOff = true;
+      ROS_INFO_STREAM("-----");
       for (int i = 0; i < 4; i++){
+	ROS_INFO_STREAM("pose = " << pose[i] << " goal = " << dropOffPose[i] <<  " dif = " <<  pose[i] - dropOffPose[i]);
   	if ( abs( pose[i] - dropOffPose[i]) > tolerance){
     	  atDropOff = false;
     	}
@@ -111,7 +113,7 @@ int main( int argc, char** argv )
     while(!atDropOff);
    
     //Publish the marker to the drop off zone
-    marker.pose.position.x = dropOffPose[0];
+    marker.pose.position.x = dropOffPose[0]-0.5;
     marker.pose.position.y = dropOffPose[1];
     marker.pose.orientation.w = dropOffPose[2];
     marker.pose.orientation.z = dropOffPose[3];
