@@ -21,12 +21,10 @@ int main( int argc, char** argv )
 
   ros::init(argc, argv, "add_markers");
   ros::NodeHandle n;
-  ros::Rate r(2);
+  ros::Rate r(1);
   ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
   ros::Subscriber amcl_sub = n.subscribe("amcl_pose", 1000, poseCallback);
 
-  while (ros::ok())
-  {
     visualization_msgs::Marker marker;
     // Set the frame ID and timestamp.  See the TF tutorials for information on these.
     marker.header.frame_id = "/map";
@@ -88,9 +86,10 @@ int main( int argc, char** argv )
     	  atPickUp = false;
     	}
       }
+      ros::spinOnce();
       r.sleep();
-    }
-    while(!atPickUp);
+    }while(!atPickUp);
+    
 
     //Hide the marker	
     marker.action = visualization_msgs::Marker::DELETE;
@@ -106,6 +105,7 @@ int main( int argc, char** argv )
     	  atDropOff = false;
     	}
       }
+      ros::spinOnce();
       r.sleep();
     }
     while(!atDropOff);
@@ -120,5 +120,4 @@ int main( int argc, char** argv )
     ROS_INFO("Robot arrived. Marker is now at the drop off zone");
 
     ros::spin();    
-  }
 }
