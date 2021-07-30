@@ -8,16 +8,19 @@ Robot has to navigate on its own to a specific pose and picks up a virtual marke
 Later it has to navigate to destination pose and drops off the virtual marker.
 
 ## Packages
-"home_service_robot" project consists of several custom built along with pre-existing packages from ROS community.
+Home Service Robot project consists of several custom built along with pre-existing packages from ROS community.
 
-Localization is achieved using AMCL algorithm.
-Environment Mapping is done by 'gmapping' package.
-To achieve Robot Navigation, 'Dijkstra's algorithm' (a variant of the Uniform Cost Search algorithm) is used. Which results in, ROS navigation stack creates a path for the robot while avoiding obstacles on its path.
+Localization is achieved using AMCL algorithm, which is a probabilistic localization system for a robot moving in 2D. It implements the adaptive (or KLD-sampling) Monte Carlo localization approach using a particle filter to track the pose of a robot against a known map.
+
+
+Environment Mapping is done by 'gmapping' package. This package provides laser-based SLAM (Simultaneous Localization and Mapping), as a ROS node called slam_gmapping. Using slam_gmapping, it is possible create a 2-D occupancy grid map (like a building floorplan) from laser and pose data collected by a mobile robot.
+
+
+ROS navigation stack creates a route for the robot while avoiding obstacles on its path. It takes in information from odometry, sensor streams, and a goal pose and outputs safe velocity commands that are sent to a mobile base. 'Dijkstra's algorithm' (a variant of the Uniform Cost Search algorithm) is used to compute the trajectory through an obstacle-free path. 
+
 'pick_objects' node - Here multiple destinations will be provided to robot.
-'add_marker' node - Subscribes to the destinations topic published by previous nodes and takes care of visualization of marker.
 
-The Gazebo world design intends to replicate the **WorldSkills Mobile Robotics** next challange in a simplified version.
-For more information please take a look on a brief competition overview at the end.
+'add_marker' node - Subscribes to the destinations topic published by previous nodes and takes care of visualization of marker.
 
 ## How to Launch the simulation?
 
