@@ -4,8 +4,11 @@
 5th project for Robotics Software Engineer Nanodegree @Udacity
 
 ## Objective
-Robot has to navigate on its own to a specific pose and picks up a virtual marker.
-Later it has to navigate to destination pose and drops off the virtual marker.
+Robot has to navigate autonomously to a specific pose and pick up a virtual marker.
+Later it has to navigate to the destination pose and drop off the virtual marker.
+
+![](home_service_robot.gif "Project Demo")
+
 
 ## Packages
 Home Service Robot project consists of several custom built along with pre-existing packages from ROS community.
