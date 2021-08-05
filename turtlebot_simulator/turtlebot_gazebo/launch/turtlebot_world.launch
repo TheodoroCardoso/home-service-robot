@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <arg name="gui"        default="true"/>
   <arg name="world_file" default="$(env TURTLEBOT_GAZEBO_WORLD_FILE)"/>
