@@ -22,6 +22,7 @@ int main(int argc, char** argv){
   // set up the frame parameters
   goal.target_pose.header.frame_id = "map";
   goal.target_pose.header.stamp = ros::Time::now();
+  ros::Duration(60.0).sleep();
 
   // Define a position and orientation for the robot to reach
   //goal.target_pose.pose.position.x = 1.0;
