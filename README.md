@@ -7,7 +7,7 @@
 Robot has to navigate autonomously to a specific pose and pick up a virtual marker.
 Later it has to navigate to the destination pose and drop off the virtual marker.
 
-![](home_service_robot.gif "Project Demo")
+![](hsr.gif "Project Demo")
 
 
 ## Packages
